@@ -11,6 +11,8 @@ public class Book {
 	private String detail;
 	private String imagePath;
 	private Date createDate;
+	private int sumOfSoldBook;
+	private int soldQuantity;
 
 	public Book() {
 		super();
@@ -116,6 +118,22 @@ public class Book {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+	}
+
+	public int getSumOfSoldBook() {
+		return sumOfSoldBook;
+	}
+
+	public void setSumOfSoldBook(int sumOfSoldBook) {
+		this.sumOfSoldBook = sumOfSoldBook;
+	}
+
+	public int getSoldQuantity() {
+		return soldQuantity;
+	}
+
+	public void setSoldQuantity(int soldQuantity) {
+		this.soldQuantity = soldQuantity;
 	}
 
 	@Override

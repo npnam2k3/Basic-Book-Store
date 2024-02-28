@@ -25,6 +25,18 @@ public class BookForm {
 	}
 
 
+	public BookForm(String bookId, String title, String author, String price,
+			String quantityInStock, String detail) {
+		super();
+		this.bookId = bookId;
+		this.title = title;
+		this.author = author;
+		this.price = price;
+		this.quantityInStock = quantityInStock;
+		this.detail = detail;
+	}
+
+
 	public BookForm(String title, String author, String price, String quantityInStock) {
 		super();
 		this.title = title;
@@ -143,6 +155,12 @@ public class BookForm {
 			} catch (NumberFormatException e) {
 				errors.add("Giá số lượng không hợp lệ");
 			}
+		}
+		if(detail == null || detail.trim().isEmpty()) {
+			errors.add("Giới thiệu sản phẩm trống");
+		}
+		if(filePath == null) {
+			errors.add("Không có file tải lên");
 		}
 		return errors;
 	}

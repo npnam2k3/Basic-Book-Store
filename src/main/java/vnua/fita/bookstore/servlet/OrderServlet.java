@@ -57,6 +57,10 @@ public class OrderServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// Xử lý Tiếng việt cho request,reponse
+	    request.setCharacterEncoding("UTF-8");
+	    response.setCharacterEncoding("UTF-8");
+	    
 		List<String> errors = new ArrayList<String>();
 		String deliveryAddress = request.getParameter("deliveryAddress");
 		String paymentMode = request.getParameter("paymentMode");

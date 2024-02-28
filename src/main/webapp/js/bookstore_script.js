@@ -106,18 +106,25 @@ function plusValueAndUpdateCart(elementId, maxQuantity) {
 	}
 }
 
-function onClickRemoveBook(bookTitle, bookId){
-	let c = confirm('Bạn chắc chắn muốn xóa cuốn sách '+ bookTitle+' khỏi giỏ hàng');
-	if(c){
+function onClickRemoveBook(bookTitle, bookId) {
+	let c = confirm('Bạn chắc chắn muốn xóa cuốn sách ' + bookTitle + ' khỏi giỏ hàng');
+	if (c) {
 		document.getElementById("removedBookFromCart").value = bookId;
 		document.getElementById("removedBookFromCartForm").submit();
 	}
 }
 
-function loadImage(event){
+function loadImage(event) {
 	let output = document.getElementById('bookImage');
 	output.src = URL.createObjectURL(event.target.files[0]);
-	output.onload = function(){
+	output.onload = function() {
 		URL.revokeObjectURL(output.src)
+	}
+}
+function onClickDeleteBook(bookTitle, bookId) {
+	let c = confirm('Bạn chắc chắn muốn xóa cuốn sách ' + bookTitle + '?');
+	if (c) {
+		document.getElementById("deleteBookFromAdmin").value = bookId;
+		document.getElementById("deleteBookFromAdminForm").submit();
 	}
 }

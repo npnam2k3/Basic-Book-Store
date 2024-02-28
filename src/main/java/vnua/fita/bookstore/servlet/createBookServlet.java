@@ -57,6 +57,9 @@ public class createBookServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// Xử lý Tiếng việt cho request,reponse
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
 		String title = request.getParameter("title");
 		String author = request.getParameter("author");
 		String priceStr = request.getParameter("price");
@@ -72,17 +75,36 @@ public class createBookServlet extends HttpServlet {
 			int price = Integer.parseInt(priceStr);
 			int quantityInStock = Integer.parseInt(quantityInStockStr);
 
-			// lưu ảnh thanh toán vào thư mục nếu có
+//			// lưu ảnh thanh toán vào thư mục nếu có
+//			String fileName = title + "_" + MyUtil.getTimeLabel()
+//					+ MyUtil.extracFileExtension(filePart);
+//			String appPath = getServletContext().getRealPath(""); // thu muc goc cua ung
+//																	// dung web
+//			filePart.write(MyUtil.getFolderUpload(appPath, "book-img").getAbsolutePath()
+//					+ File.separator + fileName);
+//			imagePath = "" + File.separator+fileName;
+
+			// lưu ảnh vào thư mục 'img' nếu có
 			String fileName = title + "_" + MyUtil.getTimeLabel()
 					+ MyUtil.extracFileExtension(filePart);
-			String appPath = getServletContext().getRealPath(""); // thu muc goc cua ung
-																	// dung web
-			filePart.write(MyUtil.getFolderUpload(appPath, "book-img").getAbsolutePath()
-					+ File.separator + fileName);
-			imagePath = "" + File.separator+fileName;
-			
-			
-			Book book = new Book(title, author, price, quantityInStock, detail, imagePath);
+			String contextPath = getServletContext().getRealPath("/"); // Lấy đường dẫn
+																		// thực của ứng
+																		// dụng web
+			String savePath = contextPath + "img"; // Đường dẫn đến thư mục 'img'
+
+			File fileSaveDir = new File(savePath);
+			if (!fileSaveDir.exists()) {
+				fileSaveDir.mkdir(); // Tạo thư mục 'img' nếu nó không tồn tại
+			}
+
+			String filePath = savePath + File.separator + fileName; // Đường dẫn file cuối
+																	// cùng để lưu trữ ảnh
+			filePart.write(filePath); // Lưu file ảnh
+			imagePath = "img" + File.separator + fileName; // Đường dẫn tương đối để lưu
+															// trong cơ sở dữ liệu
+
+			Book book = new Book(title, author, price, quantityInStock, detail,
+					imagePath);
 			book.setCreateDate(new Date());
 
 			boolean insertResult = bookDAO.insertBook(book);

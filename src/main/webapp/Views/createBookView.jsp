@@ -12,6 +12,8 @@
 <title>Trang chủ quản trị</title>
 </head>
 <body>
+	<jsp:include page="_header_backend.jsp"></jsp:include>
+	<jsp:include page="_menu_backend.jsp"></jsp:include>
 	<div align="center">
 		<h3>Thêm sách mới</h3>
 		<p style="color: red">${errors}</p>
@@ -47,8 +49,7 @@
 						<script>
 							ClassicEditor.create(document
 									.querySelector('#editor'));
-						</script>
-					</td>
+						</script></td>
 				</tr>
 				<tr>
 					<td></td>
