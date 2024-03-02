@@ -256,7 +256,7 @@ public class BookDAO {
 	public boolean updateBook(Book book) {
 		boolean result = false;
 		String sql = "UPDATE tblbook SET title = ?, author = ?, price = ?, quantity_in_stock = ?, "
-				+ "detail=?, image_path=? WHERE book_id = ?";
+				+ "detail = ?, image_path = ? WHERE book_id = ?";
 		jdbcConnection = DBConnection.createConnection(jdbcURL, jdbcUsername,
 				jdbcPassword);
 

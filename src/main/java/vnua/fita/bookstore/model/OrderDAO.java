@@ -122,6 +122,16 @@ public class OrderDAO {
 						throw new SQLException();
 					}
 				}
+				if ("transfer".equals(order.getPaymentMode())) {
+					preStatement = jdbcConnection.prepareStatement(sql3);
+					orderNo = MyUtil.createOrderNo(orderId);
+					preStatement.setString(1, orderNo);
+					preStatement.setInt(2, orderId);
+					insertResult = preStatement.executeUpdate() > 0;
+					if (!insertResult) {
+						throw new SQLException();
+					}
+				}
 				List<CartItem> orderBookList = order.getOrderBookList();
 				for (CartItem cartItem : orderBookList) {
 					// thêm các cuốn sách trong hóa đơn vào bảng tblorder_book

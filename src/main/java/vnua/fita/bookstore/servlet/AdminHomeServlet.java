@@ -42,7 +42,7 @@ public class AdminHomeServlet extends HttpServlet {
 			list = bookDAO.listAllBooks(todaySubtract12MonthStr, todayStr);
 		}
 		if (list.isEmpty()) {
-			errors = "Không thể lấy dữ liệu";
+			errors = "Không có cuốn sách nào";
 		}
 
 		request.setAttribute("errors", errors);
@@ -66,7 +66,7 @@ public class AdminHomeServlet extends HttpServlet {
 			String toDate = MyUtil.attachTailToDate(toDateParam);
 			list = bookDAO.listAllBooks(fromDate, toDate);
 			if(list.isEmpty()) {
-				errors = "Không thể lấy sách";
+				errors = "Không có cuốn sách nào";
 			}
 			
 			request.setAttribute("errors", errors);

@@ -13,6 +13,7 @@ public class BookForm {
 	private String quantityInStock;
 	private String detail;
 	private Part filePath;
+	private String imagePath;
 	
 	public BookForm(String bookId, String title, String author, String price,
 			String quantityInStock) {
@@ -22,6 +23,20 @@ public class BookForm {
 		this.author = author;
 		this.price = price;
 		this.quantityInStock = quantityInStock;
+	}
+
+
+	public BookForm(String bookId, String title, String author, String price,
+			String quantityInStock, String detail, Part filePath, String imagePath) {
+		super();
+		this.bookId = bookId;
+		this.title = title;
+		this.author = author;
+		this.price = price;
+		this.quantityInStock = quantityInStock;
+		this.detail = detail;
+		this.filePath = filePath;
+		this.imagePath = imagePath;
 	}
 
 
@@ -55,6 +70,36 @@ public class BookForm {
 		this.price = price;
 		this.quantityInStock = quantityInStock;
 		this.detail = detail;
+		this.filePath = filePath;
+	}
+
+
+	public String getDetail() {
+		return detail;
+	}
+
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+
+
+	public String getImagePath() {
+		return imagePath;
+	}
+
+
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
+
+
+	public Part getFilePath() {
+		return filePath;
+	}
+
+
+	public void setFilePath(Part filePath) {
 		this.filePath = filePath;
 	}
 

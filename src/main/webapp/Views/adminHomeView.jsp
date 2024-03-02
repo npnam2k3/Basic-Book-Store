@@ -58,7 +58,7 @@
 					<td align="center"><button type="button"
 							onclick="onClickDeleteBook('${book.title}', ${book.bookId})">Xóa</button></td>
 					<td align="center"><button type="button"
-							onclick="activeAsLinkInNewTab('detailBook?bookId=${book.bookId}')">Xem
+							onclick="activeAsLink('detailBook_backend?bookId=${book.bookId}')">Xem
 							chi tiết</button></td>
 				</tr>
 			</c:forEach>

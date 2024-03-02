@@ -167,6 +167,7 @@ public class OrderServlet extends HttpServlet {
 			filePart.write(MyUtil.getFolderUpload(appPath, "transfer-img-upload")
 					.getAbsolutePath() + File.separator + fileName);
 			order.setOrderStatus(Constant.WAITING_CONFIRM_ORDER_STATUS); //chờ xác nhận chuyển khoản
+			order.setOrderApproveDate(now);
 			order.setPaymentStatus(false); //chưa thanh toán
 			order.setPaymentImagePath("transfer-img-upload"+File.separator+fileName);
 		}

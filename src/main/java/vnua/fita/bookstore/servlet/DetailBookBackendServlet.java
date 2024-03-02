@@ -17,12 +17,12 @@ import vnua.fita.bookstore.model.BookDAO;
 /**
  * Servlet implementation class DetailBookServlet
  */
-@WebServlet(urlPatterns = {"/detailBook"})
-public class DetailBookServlet extends HttpServlet {
+@WebServlet(urlPatterns = {"/detailBook_backend"})
+public class DetailBookBackendServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private BookDAO bookDAO;
 
-	public DetailBookServlet() {
+	public DetailBookBackendServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -52,7 +52,7 @@ public class DetailBookServlet extends HttpServlet {
 			} else {
 				request.setAttribute("book", book);
 				RequestDispatcher rd = request.getServletContext()
-						.getRequestDispatcher("/Views/detailBookView.jsp");
+						.getRequestDispatcher("/Views/detailBook_backendView.jsp");
 				rd.forward(request, response);
 			}
 		}

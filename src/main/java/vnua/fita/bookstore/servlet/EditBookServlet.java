@@ -73,6 +73,10 @@ public class EditBookServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// Xử lý Tiếng việt cho request,reponse
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+
 		String bookIdStr = request.getParameter("bookId");
 		String title = request.getParameter("title");
 		String author = request.getParameter("author");
@@ -83,7 +87,7 @@ public class EditBookServlet extends HttpServlet {
 		String imagePath = request.getParameter("imagePath");
 
 		BookForm bookForm = new BookForm(bookIdStr, title, author, priceStr,
-				quantityInStockStr, detail);
+				quantityInStockStr, detail, filePart, imagePath);
 		List<String> errors = bookForm.validateEditBookForm();
 		if (errors.isEmpty()) {
 			int bookId = Integer.parseInt(bookIdStr);
@@ -93,7 +97,7 @@ public class EditBookServlet extends HttpServlet {
 			if (filePart != null && filePart.getSize() > 0) {
 				String fileName = title + "_" + MyUtil.getTimeLabel()
 						+ MyUtil.extracFileExtension(filePart);
-				String appPath = getServletContext().getRealPath("/");
+				String appPath = getServletContext().getRealPath("");
 				filePart.write(
 						MyUtil.getFolderUpload(appPath, "book-img").getAbsolutePath()
 								+ File.separator + fileName);

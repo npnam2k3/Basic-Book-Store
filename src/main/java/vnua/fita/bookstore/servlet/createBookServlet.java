@@ -60,6 +60,8 @@ public class createBookServlet extends HttpServlet {
 		// Xử lý Tiếng việt cho request,reponse
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
+		
+		
 		String title = request.getParameter("title");
 		String author = request.getParameter("author");
 		String priceStr = request.getParameter("price");
