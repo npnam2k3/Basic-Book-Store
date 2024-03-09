@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import vnua.fita.bookstore.util.MyUtil;
+
 /**
  * Servlet implementation class LogoutServlet
  */
@@ -37,6 +39,7 @@ public class LogoutServlet extends HttpServlet {
 //				.getRequestDispatcher("/Views/clientHomeView.jsp");
 //		rd.forward(request, response);
 		request.getSession().invalidate();
+		MyUtil.deleteUserCookie(response);
 		response.sendRedirect(request.getContextPath() + "/");
 	}
 

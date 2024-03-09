@@ -11,4 +11,9 @@ public class Constant {
 	
 	public static final String PAYMENTED_STATUS = "Đã thanh toán";
 	public static final String UNPAYMENT_STATUS = "Chưa thanh toán";
+	public static final String TRANSFER_PAYMENT_MODE = "transfer";
+	public static final String WAITING_APPROVE_ACTION = "waiting";
+	public static final String USERNAME_STORE_IN_COOKIE_OF_BOOKSTORE = "usernameStoreInCookieOfBookstore";
+	public static final String TOKEN_STORE_IN_COOKIE_OF_BOOKSTORE = "tokenStoreInCookieOfBookstore";
+	public static final String SECRET_STRING = "secret";
 }

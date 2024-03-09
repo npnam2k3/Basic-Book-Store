@@ -5,11 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import vnua.fita.bookstore.bean.Book;
 import vnua.fita.bookstore.bean.CartItem;
 import vnua.fita.bookstore.bean.Order;
+import vnua.fita.bookstore.bean.User;
+import vnua.fita.bookstore.util.Constant;
 import vnua.fita.bookstore.util.MyUtil;
 
 public class OrderDAO {
@@ -150,8 +157,8 @@ public class OrderDAO {
 					preStatement.setInt(1, cartItem.getSelectedBook().getQuantityInStock()
 							- cartItem.getQuantity());
 					preStatement.setInt(2, cartItem.getSelectedBook().getBookId());
-					insertResult = preStatement.executeUpdate()>0;
-					if(!insertResult) {
+					insertResult = preStatement.executeUpdate() > 0;
+					if (!insertResult) {
 						throw new SQLException();
 					}
 				}
@@ -159,16 +166,210 @@ public class OrderDAO {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			DBConnection.closeResultSet(resultSet);
 			DBConnection.closePreparedStatement(preStatement);
 			DBConnection.closeConnect(jdbcConnection);
 		}
-		if(insertResult) {
-			//thêm thành công, bổ sung thuộc tính vào đối tượng order và trả lại
+		if (insertResult) {
+			// thêm thành công, bổ sung thuộc tính vào đối tượng order và trả lại
 			order.setOrderId(orderId);
 			order.setOrderNo(orderNo);
 		}
 		return insertResult;
+	}
+
+	// lay danh sach hoa don theo username cua khach hang
+	public List<Order> getOrderList(String customerUserName) {
+		// key: orderId, value: order
+		Map<Integer, Order> orderListHashMap = new HashMap<Integer, Order>();
+		String sql = "SELECT ord.*, ordb.quantity, ordb.price, b.*, u.* "
+				+ "FROM tblorder ord "
+				+ "INNER JOIN tblorder_book ordb ON ord.order_id = ordb.order_id "
+				+ "INNER JOIN tblbook b ON ordb.book_id = b.book_id "
+				+ "INNER JOIN tbluser u ON ord.customer_username = u.user_name "
+				+ "WHERE ord.customer_username = ? " + "ORDER BY ord.order_date DESC";
+		jdbcConnection = DBConnection.createConnection(jdbcURL, jdbcUsername,
+				jdbcPassword);
+		try {
+			preStatement = jdbcConnection.prepareStatement(sql);
+			preStatement.setString(1, customerUserName);
+			resultSet = preStatement.executeQuery();
+			while (resultSet.next()) {
+				int orderId = resultSet.getInt("order_id");
+				if (!orderListHashMap.containsKey(orderId)) {
+					// neu chua co trong hashmap
+					Order order = new Order();
+					fillOrderFromResultSet(resultSet, order);
+					List<CartItem> orderBookList = new ArrayList<CartItem>();
+					Book orderBook = new Book();
+					fillBookFromResultSet(resultSet, orderBook);
+					CartItem cartItem = new CartItem(orderBook,
+							resultSet.getInt("ordb.quantity"));
+					orderBookList.add(cartItem);
+					order.setOrderBookList(orderBookList);
+					orderListHashMap.put(orderId, order);
+				} else {
+					// neu orderId da co trong hashmap > update order tai vi tri da ton
+					// tai do
+					Order order = orderListHashMap.get(orderId); // lay ra doi tuong order
+					List<CartItem> orderBookList = order.getOrderBookList(); // lay ra
+																				// bookList
+					Book orderBook = new Book();
+					fillBookFromResultSet(resultSet, orderBook);
+					CartItem cartItem = new CartItem(orderBook,
+							resultSet.getInt("ordb.quantity"));
+					orderBookList.add(cartItem); // bo sung them vao danh sach order tuong
+													// ung
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnection.closeResultSet(resultSet);
+			DBConnection.closePreparedStatement(preStatement);
+			DBConnection.closeConnect(jdbcConnection);
+		}
+
+		Collection<Order> values = orderListHashMap.values();
+		ArrayList<Order> orderList = new ArrayList<Order>(values);
+		// Sap xep theo orderId giam dan, da dinh nghia trong phuong thuc compareTo cua
+		// lop Order
+		return orderList;
+	}
+
+	private void fillOrderFromResultSet(ResultSet resultSet, Order order)
+			throws SQLException {
+		order.setOrderId(resultSet.getInt("order_id"));
+		order.setOrderNo(resultSet.getString("ord.order_no"));
+		order.setOrderDate(resultSet.getTimestamp("ord.order_date"));
+		order.setOrderApproveDate(resultSet.getTimestamp("ord.order_approve_date"));
+		order.setOrderStatus(resultSet.getByte("ord.order_status"));
+		order.setStatusDate(resultSet.getTimestamp("ord.status_date"));
+		order.setPaymentMode(resultSet.getString("ord.payment_mode"));
+		order.setPaymentStatus(resultSet.getBoolean("ord.payment_status"));
+		order.setTotalCost(resultSet.getInt("ord.total_cost"));
+		order.setDeliveryAddress(resultSet.getString("ord.delivery_address"));
+		order.setPaymentImagePath(resultSet.getString("ord.payment_img"));
+		User customer = new User();
+		customer.setUsername(resultSet.getString("u.user_name"));
+		customer.setFullname(resultSet.getString("u.fullname"));
+		customer.setMobile(resultSet.getString("u.mobile"));
+		order.setCustomer(customer);
+	}
+
+	private void fillBookFromResultSet(ResultSet resultSet, Book orderBook)
+			throws SQLException {
+		orderBook.setBookId(resultSet.getInt("b.book_id"));
+		orderBook.setTitle(resultSet.getString("b.title"));
+		orderBook.setAuthor(resultSet.getString("b.author"));
+		orderBook.setPrice(resultSet.getInt("ordb.price"));
+		orderBook.setImagePath(resultSet.getString("b.image_path"));
+	}
+
+	// lay danh sach hoa don theo trang thai (danh cho admin)
+	public List<Order> getOrderList(byte orderStatus) {
+		// key: orderId, value: order
+		Map<Integer, Order> orderListHashMap = new HashMap<Integer, Order>();
+		String sql = "SELECT ord.*, ordb.quantity, ordb.price, b.*, u.* "
+				+ "FROM tblorder ord "
+				+ "INNER JOIN tblorder_book ordb ON ord.order_id = ordb.order_id "
+				+ "INNER JOIN tblbook b ON ordb.book_id = b.book_id "
+				+ "INNER JOIN tbluser u ON ord.customer_username = u.user_name "
+				+ "WHERE ord.order_status = ? "
+				+ "ORDER BY ord.status_date DESC, ord.order_date DESC";
+		jdbcConnection = DBConnection.createConnection(jdbcURL, jdbcUsername,
+				jdbcPassword);
+		try {
+			preStatement = jdbcConnection.prepareStatement(sql);
+			preStatement.setByte(1, orderStatus);
+			resultSet = preStatement.executeQuery();
+			while (resultSet.next()) {
+				int orderId = resultSet.getInt("order_id");
+				if (!orderListHashMap.containsKey(orderId)) {
+					// neu chua co trong HashMap
+					Order order = new Order();
+					fillOrderFromResultSet(resultSet, order);
+					List<CartItem> orderBookList = new ArrayList<CartItem>();
+					Book orderBook = new Book();
+					fillBookFromResultSet(resultSet, orderBook);
+					CartItem cartItem = new CartItem(orderBook,
+							resultSet.getInt("ordb.quantity"));
+					orderBookList.add(cartItem);
+					order.setOrderBookList(orderBookList);
+					orderListHashMap.put(orderId, order);
+				} else {
+					// neu orderId da co trong hashmap > update order tai vi tri da ton
+					// tai do
+					Order order = orderListHashMap.get(orderId);
+					List<CartItem> orderBookList = order.getOrderBookList();
+					Book orderBook = new Book();
+					fillBookFromResultSet(resultSet, orderBook);
+					CartItem cartItem = new CartItem(orderBook,
+							resultSet.getInt("ordb.quantity"));
+					orderBookList.add(cartItem);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnection.closeResultSet(resultSet);
+			DBConnection.closePreparedStatement(preStatement);
+			DBConnection.closeConnect(jdbcConnection);
+		}
+		Collection<Order> values = orderListHashMap.values();
+		ArrayList<Order> orderList = new ArrayList<Order>(values);
+		return orderList;
+	}
+
+	// dung cho truong hop: hoan tat giao hang, huy don, tra hang
+	public boolean updateOrder(int orderId, byte orderStatus) {
+		boolean updateResult = false;
+
+		String sql = "UPDATE tblorder SET order_status = ?, status_date = ?, payment_status = ? "
+				+ "WHERE order_id = ?";
+		Date statusDate = new Date();
+		jdbcConnection = DBConnection.createConnection(jdbcURL, jdbcUsername,
+				jdbcPassword);
+		try {
+			preStatement = jdbcConnection.prepareStatement(sql);
+			preStatement.setByte(1, orderStatus);
+			preStatement.setString(2, MyUtil.convertDateToString(statusDate));
+			preStatement.setBoolean(3,
+					(Constant.DELIVERED_ORDER_STATUS == orderStatus) ? true : false);
+			preStatement.setInt(4, orderId);
+			updateResult = preStatement.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnection.closePreparedStatement(preStatement);
+			DBConnection.closeConnect(jdbcConnection);
+		}
+		return updateResult;
+	}
+
+	public boolean updateOrderNo(int orderId, byte orderStatus) {
+		boolean updateResult = false;
+		String sql = "UPDATE tblorder SET order_no = ?, order_approve_date = ?, order_status = ?, status_date = ?, payment_status = ? "
+				+ "WHERE order_id = ?";
+		jdbcConnection = DBConnection.createConnection(jdbcURL, jdbcUsername, jdbcPassword);
+		Date now = new Date();
+		String orderNo = MyUtil.createOrderNo(orderId);
+		try {
+			preStatement = jdbcConnection.prepareStatement(sql);
+			preStatement.setString(1, orderNo);
+			preStatement.setString(2, MyUtil.convertDateToString(now));
+			preStatement.setByte(3, orderStatus);
+			preStatement.setString(4, MyUtil.convertDateToString(now));
+			preStatement.setBoolean(5, true);
+			preStatement.setInt(6, orderId);
+			updateResult = preStatement.executeUpdate() > 0;
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			DBConnection.closePreparedStatement(preStatement);
+			DBConnection.closeConnect(jdbcConnection);
+		}
+		return updateResult;
 	}
 }

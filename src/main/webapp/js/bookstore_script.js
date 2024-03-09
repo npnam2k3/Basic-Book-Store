@@ -128,3 +128,10 @@ function onClickDeleteBook(bookTitle, bookId) {
 		document.getElementById("deleteBookFromAdminForm").submit();
 	}
 }
+
+function onClickAdminOrderConfirm(orderId, confirmType, action){
+	document.getElementById("orderIdOfAction").value = orderId;
+	document.getElementById("confirmTypeOfAction").value = confirmType;
+	document.getElementById("adminOrderForm").action = action.substring(0);
+	document.getElementById("adminOrderForm").submit();
+}

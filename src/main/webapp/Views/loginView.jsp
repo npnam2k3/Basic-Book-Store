@@ -14,7 +14,12 @@
 				name="username" id="username" value="${loginForm.username }"><br>
 			<br> <label for="password">Mật khẩu</label><br> <input
 				type="password" name="password" id="password"
-				value="${loginForm.password }"><br> <br> <input
+				value="${loginForm.password }">
+				<br>
+			<label for="rememberMe">Ghi nhớ</label>
+			
+			<input type="checkbox" name="rememberMe" value="Y" ${loginForm.rememberMe} />
+			<br> <br> <input
 				type="submit" value="Đăng nhập"> <a
 				href="${pageContext.request.contextPath}/">Bỏ qua</a>
 		</form>

@@ -104,7 +104,7 @@ public class BookDAO {
 
 	public List<Book> listAllBooks(String fromDate, String toDate) {
 		List<Book> listBooks = new ArrayList<Book>();
-		String sql = "SELECT b.*, sum(obor.quantity) AS sum_quantity, sum(obor.price) AS sum_price FROM tblbook b "
+		String sql = "SELECT b.*, sum(obor.quantity) AS sum_quantity, sum(obor.price*obor.quantity) AS sum_price FROM tblbook b "
 				+ "LEFT JOIN "
 				+ "(SELECT ob.* from tblorder_book ob INNER JOIN tblorder o ON ob.order_id = o.order_id "
 				+ "WHERE o.order_status = ? AND (o.status_date BETWEEN ? AND ?)) obor "
@@ -150,7 +150,7 @@ public class BookDAO {
 	
 	public List<Book> listAllBooks(String keyword, String fromDate, String toDate){
 		List<Book> searchBookList = new ArrayList<Book>();
-		String sql = "SELECT b.*, sum(obor.quantity) AS sum_quantity, sum(obor.price) AS sum_price FROM tblbook b "
+		String sql = "SELECT b.*, sum(obor.quantity) AS sum_quantity, sum(obor.price*obor.quantity) AS sum_price FROM tblbook b "
 				+ "LEFT JOIN "
 				+ "(SELECT ob.* from tblorder_book ob INNER JOIN tblorder o ON ob.order_id = o.order_id "
 				+ "WHERE o.order_status = ? AND (o.status_date BETWEEN ? AND ?)) obor "

@@ -7,6 +7,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
@@ -18,7 +21,7 @@ public class MyUtil {
 	public static void storeLoginedUser(HttpSession session, User loginedUser) {
 		session.setAttribute("loginedUser", loginedUser);
 	}
-	
+
 	public static User getLoginedUser(HttpSession session) {
 		return (User) session.getAttribute("loginedUser");
 	}
@@ -35,17 +38,47 @@ public class MyUtil {
 		return cartOfCustomer;
 	}
 
+//	public static String getPathInfoFromServletPath(String path) {
+//		if (path == null || path.isEmpty()) {
+//			return ""; 
+//		}
+//
+//		String[] result = path.split("/");
+//		if (result.length == 0) {
+//			return "";
+//		}
+//
+//		return result[result.length - 1];
+//	}
 	public static String getPathInfoFromServletPath(String path) {
 		if (path == null || path.isEmpty()) {
-			return ""; // Hoặc có thể ném một ngoại lệ
-		}
-
-		String[] result = path.split("/");
-		if (result.length == 0) {
 			return "";
 		}
 
-		return result[result.length - 1];
+		String[] result = path.split("/");
+
+		int lastIndex = result.length - 1;
+		if (lastIndex >= 0 && result[lastIndex].isEmpty()) {
+			lastIndex--;
+		}
+
+		if (lastIndex < 1) {
+			return "";
+		}
+
+		return result[lastIndex];
+	}
+	
+	public static String getServletPath(String servletPathFull) {
+		if (servletPathFull == null || servletPathFull.isEmpty()) {
+			return ""; // Hoặc có thể ném một ngoại lệ
+		}
+
+		String[] result = servletPathFull.split("/");
+		if (result.length == 0) {
+			return "";
+		}
+		return "/"+result[1];
 	}
 
 	public static String getTimeLabel() {
@@ -93,7 +126,7 @@ public class MyUtil {
 	public static String createOrderNo(int orderId) {
 		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyy");
 		int code = orderId % 100;
-		return sdf.format(new Date())+code;
+		return sdf.format(new Date()) + code;
 	}
 
 	public static Date subtractFromDate(int months, Date date) {
@@ -105,5 +138,66 @@ public class MyUtil {
 
 	public static String attachTailToDate(String date) {
 		return date + " 00:00:00";
+	}
+
+	// Lưu thông tin người dùng vào cookie
+	public static void storeUserCookie(HttpServletResponse response, User user) {
+		System.out.println("Store user cookie");
+		Cookie cookieUserName = new Cookie(Constant.USERNAME_STORE_IN_COOKIE_OF_BOOKSTORE,
+				user.getUsername());
+		// 1 ngay(doi ra giay)
+		cookieUserName.setMaxAge(60 * 60 * 24);
+		response.addCookie(cookieUserName);
+		Cookie cookieToken = new Cookie(Constant.TOKEN_STORE_IN_COOKIE_OF_BOOKSTORE,
+				createTokenFromUserInfo(user));
+		
+		//1 ngay (da doi ra giay)
+		cookieToken.setMaxAge(60*60*24);
+		response.addCookie(cookieToken);
+	}
+	
+	public static String getUserNameInCookie(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if(cookies != null) {
+			for(Cookie cookie: cookies) {
+				if(Constant.USERNAME_STORE_IN_COOKIE_OF_BOOKSTORE.equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
+	// Lấy ra chuỗi mã hóa lưu trong Cookie
+	public static String getTokenInCookie(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				// nếu trùng tên (key) đã lưu, trả về giá trị
+				if (Constant.TOKEN_STORE_IN_COOKIE_OF_BOOKSTORE
+						.equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
+	// Tạo chuỗi mã hóa để lưu vào cookie, dành cho xác thực về sau
+	public static String createTokenFromUserInfo(User user) {
+		return user.getUsername() + Constant.SECRET_STRING + user.getPassword();
+	}
+
+	// xóa Cookie của người dùng
+	public static void deleteUserCookie(HttpServletResponse response) {
+		Cookie cookieUserName = new Cookie(Constant.USERNAME_STORE_IN_COOKIE_OF_BOOKSTORE,
+				null);
+		// 0 giây (cookie này sẽ hết hiệu lực ngay lập tức)
+		cookieUserName.setMaxAge(0);
+		response.addCookie(cookieUserName);
+		Cookie cookieToken = new Cookie(Constant.TOKEN_STORE_IN_COOKIE_OF_BOOKSTORE,
+				null);
+		cookieToken.setMaxAge(0);
+		response.addCookie(cookieToken);
 	}
 }
