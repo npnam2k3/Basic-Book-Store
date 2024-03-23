@@ -75,6 +75,8 @@ public class Order implements Comparable<Order> {
 			this.paymentModeDescription = "Tiền mặt khi nhận sách";
 		} else if ("transfer".equals(paymentMode)) {
 			this.paymentModeDescription = "Chuyển khoản";
+		} else if ("vnpay".equals(paymentMode)) {
+			this.paymentModeDescription = "Thanh toán VNPay";
 		}
 	}
 

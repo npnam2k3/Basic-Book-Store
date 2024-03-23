@@ -29,23 +29,34 @@
 					<tr>
 						<td>Giá tiền</td>
 						<td><fmt:formatNumber type="number" value="${book.price }" /><sup>đ</sup></td>
+						
 					</tr>
+					<tr>
+						<td>Số lượng có sẵn</td>
+						<td><span>${book.quantityInStock}</span></td>
+						
+					</tr>
+					<%-- <tr><b>Số lượng có sẵn: <span>${book.quantityInStock}</span></b></tr> --%>
 					<tr>
 						<td colspan="2">
 							<div
-								style="text-align: justify; text-justify: inner-word; margin: 5px;display: flex;">
+								style="text-align: justify; text-justify: inner-word; margin: 5px; display: flex;">
 								<div>
-									<img style=" margin-right: 5px" alt="Book Image"
+									<img style="margin-right: 5px" alt="Book Image"
 										src="${book.imagePath}" width="150">
 								</div>
 								${book.detail }
+								
 							</div>
+							
 						</td>
-					<tr>
+					
+							
+						
+					
 				</table>
-				<div style="margin-top: 20px">
-					<b>Số lượng có sẵn: <span>${book.quantityInStock}</span></b>
-					<%-- &nbsp;&nbsp; <img alt="minus-icon" src="img/icons-minus.png"
+
+				<%-- &nbsp;&nbsp; <img alt="minus-icon" src="img/icons-minus.png"
 						onclick="minusValue('quantity');" width="20"> <input
 						type="text" value="1" size="2" style="line-height: 20px;"
 						id="quantity" name="quantityPurchased"
@@ -64,7 +75,7 @@
 							vào giỏ hàng</button>
 					</c:if>
 					&nbsp;&nbsp;&nbsp; <a href="clientHome">Tiếp tục xem sách</a> --%>
-				</div>
+
 			</form>
 		</c:if>
 	</div>

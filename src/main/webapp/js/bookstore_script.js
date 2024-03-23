@@ -22,6 +22,8 @@ function minusValue(elementId) {
 function validateValue(element, maxQuantity) {
 	if (element.value > maxQuantity) {
 		alert('Giá trị không được vượt quá: ' + maxQuantity);
+	}else if(element.value){
+		alert('Giá trị không được âm')
 	}
 }
 
@@ -66,7 +68,10 @@ function validateValueAndUpdateCart(element, maxQuantity, bookId, price) {
 	var newQuantity = element.value;
 	if (newQuantity > maxQuantity) {
 		alert('Giá trị không được vượt quá ' + maxQuantity);
-	} else if (newQuantity > 0) {
+	}else if(newQuantity < 0){
+		alert('Giá trị không được âm')
+	}
+	 else if (newQuantity > 0) {
 		//ajax gửi request đến server để update cart
 		updateQuantityOfCartItem(newQuantity, bookId);
 

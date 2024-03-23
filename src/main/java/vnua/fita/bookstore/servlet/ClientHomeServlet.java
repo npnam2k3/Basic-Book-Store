@@ -36,26 +36,6 @@ public class ClientHomeServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-//		String errors = null;
-//		List<Book> list = null;
-//		
-//		String keyword = request.getParameter("keyword"); //lấy keyword nếu có
-//		if(keyword != null && !keyword.isEmpty()) { //người dùng bấm tìm kiếm
-//			list = bookDAO.listAllBooks(keyword);
-//		}else {
-//			list = bookDAO.listAllBooks();
-//		}
-//		if (list.isEmpty()) {
-//			errors = "Không thể lấy dữ liệu";
-//		}
-//
-//		//Lưu thông tin vào request attribute trước khi forward sang Views
-//		request.setAttribute("errors", errors);
-//		request.setAttribute("bookList", list);
-//		
-//		RequestDispatcher rd = this.getServletContext()
-//				.getRequestDispatcher("/Views/clientHomeView.jsp");
-//		rd.forward(request, response);
 
 		List<Book> list = null;
 		int page = 1;

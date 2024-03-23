@@ -38,36 +38,36 @@ public class MyUtil {
 		return cartOfCustomer;
 	}
 
-//	public static String getPathInfoFromServletPath(String path) {
-//		if (path == null || path.isEmpty()) {
-//			return ""; 
-//		}
-//
-//		String[] result = path.split("/");
-//		if (result.length == 0) {
-//			return "";
-//		}
-//
-//		return result[result.length - 1];
-//	}
 	public static String getPathInfoFromServletPath(String path) {
 		if (path == null || path.isEmpty()) {
-			return "";
+			return ""; 
 		}
 
 		String[] result = path.split("/");
-
-		int lastIndex = result.length - 1;
-		if (lastIndex >= 0 && result[lastIndex].isEmpty()) {
-			lastIndex--;
-		}
-
-		if (lastIndex < 1) {
+		if (result.length == 0) {
 			return "";
 		}
 
-		return result[lastIndex];
+		return result[result.length - 1];
 	}
+//	public static String getPathInfoFromServletPath(String path) {
+//		if (path == null || path.isEmpty()) {
+//			return "";
+//		}
+//
+//		String[] result = path.split("/");
+//
+//		int lastIndex = result.length - 1;
+//		if (lastIndex >= 0 && result[lastIndex].isEmpty()) {
+//			lastIndex--;
+//		}
+//
+//		if (lastIndex < 1) {
+//			return "";
+//		}
+//
+//		return result[lastIndex];
+//	}
 	
 	public static String getServletPath(String servletPathFull) {
 		if (servletPathFull == null || servletPathFull.isEmpty()) {

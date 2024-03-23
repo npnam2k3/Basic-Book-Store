@@ -70,6 +70,7 @@
 		<p style="color: red;">${errors}</p>
 		<form action="${pageContext.request.contextPath }/order" method="post"
 			enctype="multipart/form-data">
+			<input value="${cartOfCustomer.totalCost }" name="amount" type="hidden">
 			<table border="1">
 				<tr>
 					<th align="left">Tài khoản</th>
@@ -113,6 +114,9 @@
 							<img alt="" src="" id="bookImage" width="150">&nbsp;
 							<input type="file" name="file" accept="image/*" onchange="loadImage(event)" />
 						</div>
+						<input type="radio" name="paymentMode" value="vnpay"
+						onclick="document.getElementById('uploadDiv').style.display='none';" />
+						Thanh toán qua VNPay
 						</td>
 				</tr>
 				<tr>

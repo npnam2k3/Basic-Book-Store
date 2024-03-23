@@ -13,7 +13,21 @@
 </head>
 <body>
 	<jsp:include page="_header_backend.jsp"></jsp:include>
-	<jsp:include page="_menu_backend.jsp"></jsp:include>
+	<div style="padding: 5px; text-align: center;">
+		<a href="${pageContext.request.contextPath}/adminHome" >Trang chủ</a> |
+		<a href="${pageContext.request.contextPath }/adminOrderList/waiting"
+			<c:if test="${pathInfo == 'waiting'}">style="color: red;"</c:if>>Các
+			đơn hàng chưa xác nhận</a> | <a
+			href="${pageContext.request.contextPath }/adminOrderList/delivering"
+			<c:if test="${pathInfo == 'delivering'}">style="color: red;"</c:if>>Các
+			đơn hàng đang chờ giao</a> | <a
+			href="${pageContext.request.contextPath }/adminOrderList/delivered"
+			<c:if test="${pathInfo == 'delivered'}">style="color: red;"</c:if>>Các
+			đơn hàng đã giao</a> | <a
+			href="${pageContext.request.contextPath }/adminOrderList/reject"
+			<c:if test="${pathInfo == 'reject'}">style="color: red;"</c:if>>Các
+			đơn hàng khách trả lại</a>
+	</div>
 	<div align="center">
 		<div align="center">
 			<h3>DANH SÁCH ĐƠN HÀNG ${listType}</h3>

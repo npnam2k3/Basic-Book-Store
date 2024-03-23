@@ -19,7 +19,7 @@ import vnua.fita.bookstore.util.MyUtil;
 /**
  * Servlet implementation class AdminOrderListServlet
  */
-@WebServlet(urlPatterns = { "/adminOrderList/waiting", "/adminOrderList/delivering",
+@WebServlet(urlPatterns = {"/adminOrderList/waiting", "/adminOrderList/delivering",
 		"/adminOrderList/delivered", "/adminOrderList/reject" })
 public class AdminOrderListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -37,6 +37,7 @@ public class AdminOrderListServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String servletPath = request.getServletPath();
 		String pathInfo = MyUtil.getPathInfoFromServletPath(servletPath);
+//		System.out.println(servletPath);
 		List<Order> orderListOfCustomer = new ArrayList<Order>();
 		if("waiting".equals(pathInfo)) {
 			orderListOfCustomer = orderDAO.getOrderList(Constant.WAITING_CONFIRM_ORDER_STATUS);
@@ -51,6 +52,7 @@ public class AdminOrderListServlet extends HttpServlet {
 			orderListOfCustomer = orderDAO.getOrderList(Constant.REJECT_ORDER_STATUS);
 			request.setAttribute("listType", "KHÁCH TRẢ LẠI HÀNG");
 		}
+		request.setAttribute("pathInfo", pathInfo);
 		request.setAttribute("orderListOfCustomer", orderListOfCustomer);
 		RequestDispatcher rd = this.getServletContext().getRequestDispatcher("/Views/adminOrderListView.jsp");
 		rd.forward(request, response);

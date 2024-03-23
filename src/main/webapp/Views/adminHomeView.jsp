@@ -12,13 +12,27 @@
 </head>
 <body>
 	<jsp:include page="_header_backend.jsp"></jsp:include>
-	<jsp:include page="_menu_backend.jsp"></jsp:include>
+	<%-- <jsp:include page="_menu_backend.jsp"></jsp:include> --%>
+	<div style="padding: 5px; text-align: center;">
+		<a href="${pageContext.request.contextPath}/adminHome"
+			<c:if test="${not empty homeUrl}">style="color: red;"</c:if>>Trang
+			chủ</a> | <a
+			href="${pageContext.request.contextPath }/adminOrderList/waiting">Các
+			đơn hàng chưa xác nhận</a> | <a
+			href="${pageContext.request.contextPath }/adminOrderList/delivering">Các
+			đơn hàng đang chờ giao</a> | <a
+			href="${pageContext.request.contextPath }/adminOrderList/delivered">Các
+			đơn hàng đã giao</a> | <a
+			href="${pageContext.request.contextPath }/adminOrderList/reject">Các
+			đơn hàng khách trả lại</a>
+	</div>
 	<div align="center">
 		<h3>Danh sách các cuốn sách</h3>
 		<p style="color: red">${errors }</p>
 		<form action="deleteBook" id="deleteBookFromAdminForm" method="post">
 			<input type="hidden" name="bookId" id="deleteBookFromAdmin" />
 		</form>
+		
 		<div style="margin-bottom: 10px;">
 			<form method="post" action="adminHome">
 				<b>Lọc theo ngày bán: </b> Từ ngày &nbsp; <input type="date"
@@ -29,6 +43,8 @@
 				<fmt:formatNumber type="number" maxFractionDigits="0"
 					value="${turnover }" />
 				<sup>đ</sup>
+				<input type="hidden" name="keyword" value="${keyword}">
+				<input type="hidden" name="currentPage" value="${currentPage}">
 			</form>
 		</div>
 		<table border="1">
@@ -63,10 +79,57 @@
 				</tr>
 			</c:forEach>
 		</table>
-		<br>
-		<sup>(* Cột số lượng bán: Mặc định hiển thị số sách bán trong 12 tháng cho đến ngày hiện tại *)</sup>
+		<br> <sup>(* Cột số lượng bán: Mặc định hiển thị số sách
+			bán trong 12 tháng cho đến ngày hiện tại *)</sup> <br />
+		<a href="createBook">Thêm sách mới</a><br>
 		
-		<br/><a href="createBook">Thêm sách mới</a><br>
+		<!-- không có hoạt động tìm kiếm -->
+		<c:if test="${empty keyword }">
+			<div style="margin-top: 5px">
+				<!-- link previous chỉ xuất hiện khi trang hiện tại lớn hơn 1 -->
+				<c:if test="${currentPage gt 1 }">
+					<a href="adminHome?page=${currentPage - 1} ">Previous</a> &nbsp;
+				</c:if>
+				<c:forEach begin="1" end="${noOfPages }" var="i">
+					<c:choose>
+						<c:when test="${currentPage eq i}"> <!-- Trùng lặp trang hiện tại thì không tạo link -->
+							&nbsp;${i}&nbsp;
+						</c:when>
+						<c:otherwise>
+							&nbsp;<a href="adminHome?page=${i}">${i}</a>&nbsp;
+						</c:otherwise>
+					</c:choose>
+				</c:forEach>
+
+				<!-- Link Next chỉ xuất hiện khi trang hiện tại nhỏ hơn tổng số trang -->
+				<c:if test="${currentPage lt noOfPages }">
+					&nbsp;<a href="adminHome?page=${currentPage + 1}">Next</a>
+				</c:if>
+			</div>
+		</c:if>
+
+		<!-- có hoạt động tìm kiếm, thêm tham số keyword -->
+		<c:if test="${not empty keyword }">
+			<div style="margin-top: 5px">
+				<c:if test="${currentPage gt 1}">
+					<a href="adminHome?page=${currentPage - 1}&keyword=${keyword}">Previous</a>&nbsp;
+				</c:if>
+				<c:forEach begin="1" end="${noOfPages }" var="i">
+					<c:choose>
+						<c:when test="${currentPage eq i}">
+							&nbsp;${i}&nbsp;
+						</c:when>
+						<c:otherwise>
+							&nbsp;<a href="adminHome?page=${i}&keyword=${keyword}">${i}</a>&nbsp;
+						</c:otherwise>
+					</c:choose>
+				</c:forEach>
+				<c:if test="${currentPage lt noOfPages }">
+					&nbsp;<a
+						href="adminHome?page=${currentPage + 1}&keyword=${keyword}">Next</a>
+				</c:if>
+			</div>
+		</c:if>
 	</div>
 </body>
 </html>

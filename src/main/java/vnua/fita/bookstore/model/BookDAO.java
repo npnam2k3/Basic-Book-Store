@@ -148,6 +148,7 @@ public class BookDAO {
 		return listBooks;
 	}
 	
+	
 	public List<Book> listAllBooks(String keyword, String fromDate, String toDate){
 		List<Book> searchBookList = new ArrayList<Book>();
 		String sql = "SELECT b.*, sum(obor.quantity) AS sum_quantity, sum(obor.price*obor.quantity) AS sum_price FROM tblbook b "
@@ -194,6 +195,54 @@ public class BookDAO {
 			DBConnection.closeConnect(jdbcConnection);
 		}
 		return searchBookList;
+	}
+	public List<Book> listAllBooks(String fromDate, String toDate, int offset, int noOfRecords) {
+		List<Book> listBooks = new ArrayList<Book>();
+		String sql = "SELECT b.*, sum(obor.quantity) AS sum_quantity, sum(obor.price*obor.quantity) AS sum_price FROM tblbook b "
+				+ "LEFT JOIN "
+				+ "(SELECT ob.* from tblorder_book ob INNER JOIN tblorder o ON ob.order_id = o.order_id "
+				+ "WHERE o.order_status = ? AND (o.status_date BETWEEN ? AND ?)) obor "
+				+ "ON b.book_id = obor.book_id "
+				+ "GROUP BY b.book_id "
+				+ "ORDER BY sum_quantity DESC, b.create_date DESC "
+				+ "LIMIT ?,?";
+		jdbcConnection = DBConnection.createConnection(jdbcURL, jdbcUsername,
+				jdbcPassword);
+		try {
+			preStatement = jdbcConnection.prepareStatement(sql);
+			preStatement.setInt(1, Constant.DELIVERED_ORDER_STATUS);
+			preStatement.setString(2, fromDate);
+			preStatement.setString(3, toDate);
+			preStatement.setInt(4, offset);
+			preStatement.setInt(5, noOfRecords);
+			resultSet = preStatement.executeQuery();
+			while(resultSet.next()) {
+				int id = resultSet.getInt("book_id");
+				String title = resultSet.getString("title");
+				String author = resultSet.getString("author");
+				int price = resultSet.getInt("price");
+				int quantityInStock = resultSet.getInt("quantity_in_stock");
+				String detail = resultSet.getString("detail");
+				String imagePath = resultSet.getString("image_path");
+				Date createDate = resultSet.getTimestamp("create_date");
+				int soldQuantity = resultSet.getInt("sum_quantity");
+				int sumOfSoldBook = resultSet.getInt("sum_price");
+				Book book = new Book(id, title, author, price, quantityInStock);
+				book.setDetail(detail);
+				book.setImagePath(imagePath);
+				book.setCreateDate(createDate);
+				book.setSoldQuantity(soldQuantity);
+				book.setSumOfSoldBook(sumOfSoldBook);
+				listBooks.add(book);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			DBConnection.closeResultSet(resultSet);
+			DBConnection.closeStatement(statement);
+			DBConnection.closeConnect(jdbcConnection);
+		}
+		return listBooks;
 	}
 
 	public boolean deleteBook(int bookId) {
@@ -304,6 +353,57 @@ public class BookDAO {
 		return insertResult;
 	}
 
+	public List<Book> listAllBooks(String keyword, String fromDate, String toDate, int offset, int noOfRecords){
+		List<Book> searchBookList = new ArrayList<Book>();
+		String sql = "SELECT b.*, sum(obor.quantity) AS sum_quantity, sum(obor.price*obor.quantity) AS sum_price FROM tblbook b "
+				+ "LEFT JOIN "
+				+ "(SELECT ob.* from tblorder_book ob INNER JOIN tblorder o ON ob.order_id = o.order_id "
+				+ "WHERE o.order_status = ? AND (o.status_date BETWEEN ? AND ?)) obor "
+				+ "ON b.book_id = obor.book_id "
+				+ "WHERE title LIKE ? "
+				+ "GROUP BY b.book_id "
+				+ "ORDER BY sum_quantity DESC, b.create_date DESC "
+				+ "LIMIT ?, ?";
+		jdbcConnection = DBConnection.createConnection(jdbcURL, jdbcUsername,
+				jdbcPassword);
+		try {
+			preStatement = jdbcConnection.prepareStatement(sql);
+			preStatement.setInt(1, Constant.DELIVERED_ORDER_STATUS);
+			preStatement.setString(2, fromDate);
+			preStatement.setString(3, toDate);
+			preStatement.setString(4, "%"+keyword+"%");
+			preStatement.setInt(5, offset);
+			preStatement.setInt(6, noOfRecords);
+			resultSet = preStatement.executeQuery();
+			while(resultSet.next()) {
+				int id = resultSet.getInt("book_id");
+				String title = resultSet.getString("title");
+				String author = resultSet.getString("author");
+				int price = resultSet.getInt("price");
+				int quantityInStock = resultSet.getInt("quantity_in_stock");
+				String detail = resultSet.getString("detail");
+				String imagePath = resultSet.getString("image_path");
+				Date createDate = resultSet.getTimestamp("create_date");
+				int soldQuantity = resultSet.getInt("sum_quantity");
+				int sumOfSoldBook = resultSet.getInt("sum_price");
+				Book book = new Book(id, title, author, price, quantityInStock);
+				book.setDetail(detail);
+				book.setImagePath(imagePath);
+				book.setCreateDate(createDate);
+				book.setSoldQuantity(soldQuantity);
+				book.setSumOfSoldBook(sumOfSoldBook);
+				searchBookList.add(book);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			DBConnection.closeResultSet(resultSet);
+			DBConnection.closePreparedStatement(preStatement);
+			DBConnection.closeConnect(jdbcConnection);
+		}
+		return searchBookList;
+	}
+	
 	public List<Book> listAllBooks(int offset, int noOfRecords, String keyword) {
 		List<Book> listBook = new ArrayList<Book>();
 		String sql = "SELECT * FROM tblbook ";

@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import vnua.fita.bookstore.bean.Book;
 import vnua.fita.bookstore.model.BookDAO;
@@ -29,25 +30,46 @@ public class AdminHomeServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		String homeUrl = request.getServletPath();
 		String errors = null;
-		List<Book> list = bookDAO.listAllBooks();
+//		List<Book> list = bookDAO.listAllBooks();
+		List<Book> list = null;
+		int page = 1;
+		int recordsPerPage = 2;
+		if (request.getParameter("page") != null) {
+			page = Integer.parseInt(request.getParameter("page"));
+		}
+
 		String keyword = request.getParameter("keyword");
+
+		
+		int noOfRecords = bookDAO.getNoOfRecords(keyword);
+		int noOfPages = (int) Math.ceil(noOfRecords * 1.0 / recordsPerPage);
+//		String keyword = request.getParameter("keyword");
 		Date today = new Date();
 		Date todaySubtract12Month = MyUtil.subtractFromDate(12, today);
 		String todaySubtract12MonthStr = MyUtil.convertDateToString(todaySubtract12Month);
 		String todayStr = MyUtil.convertDateToString(today);
 		if(keyword != null && !keyword.isEmpty()) {
-			list = bookDAO.listAllBooks(keyword, todaySubtract12MonthStr, todayStr);
+			//list = bookDAO.listAllBooks(keyword, todaySubtract12MonthStr, todayStr);
+			list = bookDAO.listAllBooks(keyword,todaySubtract12MonthStr, todayStr,(page - 1) * recordsPerPage, recordsPerPage);
 		}else {
-			list = bookDAO.listAllBooks(todaySubtract12MonthStr, todayStr);
+			//list = bookDAO.listAllBooks(todaySubtract12MonthStr, todayStr);
+			list = bookDAO.listAllBooks(todaySubtract12MonthStr, todayStr,(page - 1) * recordsPerPage, recordsPerPage);
 		}
 		if (list.isEmpty()) {
 			errors = "Không có cuốn sách nào";
 		}
 
+		session.setAttribute("homeUrl", homeUrl);
+		
 		request.setAttribute("errors", errors);
 		request.setAttribute("turnover", calSumOfMoney(list));
 		request.setAttribute("bookList", list);
+		request.setAttribute("noOfPages", noOfPages);
+		request.setAttribute("currentPage", page);
+		request.setAttribute("keyword", keyword);
 		RequestDispatcher rd = this.getServletContext()
 				.getRequestDispatcher("/Views/adminHomeView.jsp");
 		rd.forward(request, response);
